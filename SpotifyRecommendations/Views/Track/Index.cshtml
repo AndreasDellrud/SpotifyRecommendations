@@ -1,0 +1,90 @@
+﻿@model SpotifyRecommendations.Models.TrackRecommendationViewModel
+
+@{
+    ViewData["Title"] = "Recommendation";
+}
+
+<h2>Tracks by @Model.Artist.Name</h2>
+
+<form asp-action="Index" style="width:33%; float:left">
+    <div class="form-group">
+        <label asp-for="@Model.TrackFilter.Danceability"></label>
+        <input asp-for="@Model.TrackFilter.Danceability" class="form-control" aria-describedby="danceabilityHelp" type="range" min="0" max="1" step="0.01"/>
+        <small id="danceabilityHelp" class="form-text text-muted">Do you feel like dancing?</small>
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.TrackFilter.Energy"></label>
+        <input asp-for="@Model.TrackFilter.Energy" class="form-control" aria-describedby="energyHelp" type="range" min="0" max="1" step="0.01"/>
+        <small id="energyHelp" class="form-text text-muted">High or low energy song?</small>
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.TrackFilter.Instrumentalness"></label>
+        <input asp-for="@Model.TrackFilter.Instrumentalness" class="form-control" aria-describedby="instrumentalnessHelp" type="range" min="0" max="1" step="0.01"/>
+        <small id="instrumentalnesseHelp" class="form-text text-muted">Do you want an instrumental song or a lyrical one?</small>
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.TrackFilter.Acousticness"></label>
+        <input asp-for="@Model.TrackFilter.Acousticness" class="form-control" aria-describedby="acousticnessHelp" type="range" min="0" max="1" step="0.01"/>
+        <small id="acousticnessHelp" class="form-text text-muted">Should the song be accoustic?</small>
+    </div>
+    <div class="form-group">
+        <label asp-for="@Model.TrackFilter.Valence"></label>
+        <input asp-for="@Model.TrackFilter.Valence" class="form-control" aria-describedby="valenceHelp" type="range" min="0" max="1" step="0.01"/>
+        <small id="valenceHelp" class="form-text text-muted">How happy song do you want?</small>
+    </div>
+    <input asp-for="@Model.TrackFilter.IsSearchRequest" hidden="hidden" type="hidden"/>
+    <button type="submit" class="btn btn-primary">Get recommendation</button>
+    <a asp-action="Details" asp-controller="Artist" asp-route-id="@Model.Artist.Id" class="btn btn-default">Back to @Model.Artist.Name</a>
+</form>
+
+@if (Model.Artist.Images.Any())
+{
+    <div class="img-block" style="width:66%; float: right; text-align:center">
+        <img src="@Model.Artist.Images.First().Url" style="width:400px; height:400px; border-radius: 50%;"/>
+    </div>
+}
+
+<br />
+@if (Model.Tracks.Count != 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Album</th>
+                <th scope="col">Danceability</th>
+                <th scope="col">Energy</th>
+                <th scope="col">Instrumentalness</th>
+                <th scope="col">Acousticness</th>
+                <th scope="col">Valence</th>
+                <th scope="col">Sample</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{int count = 1;}
+            @foreach (var track in Model.Tracks)
+            {
+            <tr>
+                <th scope="row">@count</th>
+                <td><a href="@track.ExternalUrls.Spotify" target="_blank">@track.Name</a></td>
+                <td>@track.Album.Name</td>
+                <td>@track.AudioFeature.Danceability</td>
+                <td>@track.AudioFeature.Energy</td>
+                <td>@track.AudioFeature.Instrumentalness</td>
+                <td>@track.AudioFeature.Acousticness</td>
+                <td>@track.AudioFeature.Valence</td>
+                @if (!string.IsNullOrEmpty(track.PreviewUrl))
+                {
+                    <td><audio class="track-audio-preview" src="@track.PreviewUrl" controls></audio></td>
+                }
+                else
+                {
+                    <td>No preview available</td>
+                }
+            </tr>
+                count++;
+            }
+        </tbody>
+    </table>
+}

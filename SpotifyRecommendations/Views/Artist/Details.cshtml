@@ -1,0 +1,66 @@
+﻿@model SpotifyRecommendations.Models.ArtistDetailsViewModel
+
+<div>
+    <div style="background-image: url(@Model.BackgroundImage.Url)" class="artist-hero">
+        <img src="@Model.Artist.Images.Where(x => x.Width < Model.BackgroundImage.Width).FirstOrDefault().Url" />
+
+    </div>
+
+    <div class="artist-info">
+        <h2>@Model.Artist.Name</h2>
+        <a asp-action="Index" asp-controller="Track" asp-route-id="@Model.Artist.Id" asp-route-trackFilter="@null" class="btn btn-primary">Recommended track</a>
+    </div>
+
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Album</th>
+                    <th scope="col">Sample</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int count = 1;}
+                @foreach (var track in Model.TopTracks)
+                {
+                    <tr>
+                        <th scope="row">@count</th>
+                        <td><a href="@track.ExternalUrls.Spotify" target="_blank">@track.Name</a></td>
+                        <td>@track.Album.Name</td>
+                        @if (!string.IsNullOrEmpty(track.PreviewUrl))
+                        {
+                            <td><audio class="track-audio-preview" src="@track.PreviewUrl" controls></audio></td>
+                        }
+                        else
+                        {
+                            <td>No preview available</td>
+                        }
+                    </tr>
+                    count++;
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="related-artists">
+        <h3>Related artists</h3>
+        @foreach (var artist in Model.RelatedArtists)
+        {
+            <div class="img-block" style="width: 10%">
+                @if (artist.Images == null)
+                {
+                    <a asp-action="Details" asp-route-id="@artist.Id"><img src="~/images/no-image.png" title="@artist.Name" /></a>
+                }
+                else
+                {
+                    <a asp-action="Details" asp-route-id="@artist.Id"><img src="@artist.Images.FirstOrDefault().Url" title="@artist.Name" /></a>
+                }
+                <label>@artist.Name</label>
+            </div>
+        }
+    </div>
+
+
+</div>

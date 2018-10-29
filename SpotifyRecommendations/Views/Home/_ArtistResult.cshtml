@@ -1,0 +1,65 @@
+﻿@model SpotifyRecommendations.Models.SearchArtistViewModel
+
+@if (Model.Artists.Count != 0)
+{
+    <hr />
+    <h2 style="text-align: center;">@Model.Genre</h2>
+    <div class="artist-result">
+        @foreach (var artist in Model.Artists)
+        {
+            <div class="img-block">
+                <a asp-action="Details" asp-controller="Artist" asp-route-id="@artist.Id">
+                    <img src="@Model.Icons.Where(x => x.ArtistId == artist.Id).FirstOrDefault().Icon.Url" class="img-circle" />
+                </a>
+                <label>@artist.Name</label>
+            </div>
+        }
+        <form id="artist-paging-form">
+            <input asp-for="@Model.Genre" hidden>
+            <input asp-for="@Model.Offset" id="offset-input" hidden>
+            <input asp-for="@Model.Limit" hidden>
+        </form>
+    </div>
+    <div style="margin-top: 3em">
+        @if (Model.Offset != 0)
+        {
+            <button type="button" id="previous-page-btn" class="btn btn-primary pull-left">Bakåt</button>
+        }
+        @if (Model.Offset < Model.Total)
+        {
+            <button type="button" id="next-page-btn" class="btn btn-primary pull-right" style="">Framåt</button>
+        }
+    </div>
+
+    <script>
+        $('#next-page-btn').click(function () {
+            if (@Model.Offset != null) {
+                var val = @Model.Offset + @Model.Limit;
+                $('#offset-input').val(val);
+                console.log('next');
+            }
+            $('#artist-paging-form').submit();
+        });
+
+        $('#previous-page-btn').click(function () {
+            if (@Model.Offset != null) {
+                var val = @Model.Offset - @Model.Limit;
+                $('#offset-input').val(val);
+            }
+            $('#artist-paging-form').submit();
+        });
+
+        $('#artist-paging-form').on('submit', function (event) {
+            event.preventDefault();
+            console.log($("#artist-paging-form").serialize());
+            $.ajax({
+                url: "Home/Search",
+                type: "post",
+                data: $("#artist-paging-form").serialize(),
+                success: function (result) {
+                    $("#artist-result-view").html(result);
+                }
+            });
+        });
+    </script>
+}

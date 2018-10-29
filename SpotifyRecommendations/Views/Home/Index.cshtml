@@ -1,0 +1,70 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>Index</h2>
+
+<div class="artist-search">
+    <h4>Search for artists by genre</h4>
+    <hr />
+    <form id="artist-search-form">
+        <div class="form-group" style="width: 100%;">
+            <label>Genre</label>
+            <div id="scrollable-dropdown-menu">
+                <input id="genre-input" for="Genre" type="text" data-items="5" class="typeahead form-control" autocomplete="off" style="width: 400px"/>
+            </div>
+            <br />
+            <button type="button" id="submit-btn" class="btn btn-primary">Search artist</button>
+        </div>
+    </form>
+</div>
+
+<div id="artist-result-view">
+    <partial name="_ArtistResult" model="new SpotifyRecommendations.Models.SearchArtistViewModel()"/>
+</div>
+
+<div style="clear:both">&nbsp;</div>
+
+@section Scripts
+    {
+        @if(Model != null)
+        {
+
+        }
+    <script>
+        var genres = new Bloodhound({
+
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+
+            local: JSON.parse('@Html.Raw(Json.Serialize(ViewData["Genres"]))')
+
+        });
+
+        $('#scrollable-dropdown-menu .typeahead').typeahead(null, {
+            name: 'genres',
+            limit: 5,
+            source: genres
+        });
+
+        $('#submit-btn').click(function () {
+            $('#artist-search-form').submit();
+        });
+
+        $('#artist-search-form').on('submit', function (event) {
+            event.preventDefault();
+            var data = {
+                "genre": $('#genre-input').val()
+            }
+            $.ajax({
+                url: "Home/Search",
+                type: "get",
+                data: data,
+                success: function (result) {
+                    $("#artist-result-view").html(result);
+                }
+            });
+        });
+    </script>
+}
