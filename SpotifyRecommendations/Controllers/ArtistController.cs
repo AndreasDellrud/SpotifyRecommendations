@@ -18,13 +18,6 @@ namespace SpotifyRecommendations.Controllers
         {
             _spotifyApiService = spotifyApiService;
         }
-        // GET: Artist
-        public ActionResult Index()
-        {
-            var testId = "7jy3rLJdDQY21OgRLCZ9sD";
-            var artist = _spotifyApiService.GetSpotifyArtist(testId);
-            return View(artist);
-        }
 
         // GET: Artist/Details/5
         public ActionResult Details(string id)

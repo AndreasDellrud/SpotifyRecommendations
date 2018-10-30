@@ -20,14 +20,15 @@
             <input asp-for="@Model.Limit" hidden>
         </form>
     </div>
+    <hr />
     <div style="margin-top: 3em">
         @if (Model.Offset != 0)
         {
-            <button type="button" id="previous-page-btn" class="btn btn-primary pull-left">Bakåt</button>
+            <button type="button" id="previous-page-btn" class="btn btn-primary pull-left">Previous</button>
         }
         @if (Model.Offset < Model.Total)
         {
-            <button type="button" id="next-page-btn" class="btn btn-primary pull-right" style="">Framåt</button>
+            <button type="button" id="next-page-btn" class="btn btn-primary pull-right" style="">Next</button>
         }
     </div>
 

@@ -2,7 +2,6 @@
 using SpotifyRecommendations.Entities;
 using SpotifyRecommendations.Models;
 using SpotifyRecommendations.Services;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -26,57 +25,50 @@ namespace SpotifyRecommendations.Controllers
 
         public IActionResult Search(string genre, int limit, int offset)
         {
-            try
-            {
-                var newLimit = limit == 0 ? 5 : limit;
+            var newLimit = limit == 0 ? 5 : limit;
 
-                var searchArtistViewModel = new SearchArtistViewModel
+            var searchArtistViewModel = new SearchArtistViewModel
+            {
+                Artists = new List<SpotifyArtist>(),
+                Limit = newLimit,
+                Offset = 0,
+                Genre = genre
+            };
+            if (!string.IsNullOrEmpty(genre))
+            {
+                var artistResponseObject = _spotifyApiService.SearchArtistByGenre(genre, newLimit, offset).Result;
+                searchArtistViewModel.Artists = artistResponseObject.Items;
+                searchArtistViewModel.Total = artistResponseObject.Total;
+                searchArtistViewModel.Offset = artistResponseObject.Offset;
+                searchArtistViewModel.Limit = artistResponseObject.Limit;
+                searchArtistViewModel.Icons = new List<SearchArtistResultIcon>();
+                foreach (var artist in artistResponseObject.Items)
                 {
-                    Artists = new List<SpotifyArtist>(),
-                    Limit = newLimit,
-                    Offset = 0,
-                    Genre = genre
-                };
-                if (!string.IsNullOrEmpty(genre))
-                {
-                    var artistResponseObject = _spotifyApiService.SearchArtistByGenre(genre, newLimit, offset).Result;
-                    searchArtistViewModel.Artists = artistResponseObject.Items;
-                    searchArtistViewModel.Total = artistResponseObject.Total;
-                    searchArtistViewModel.Offset = artistResponseObject.Offset;
-                    searchArtistViewModel.Limit = artistResponseObject.Limit;
-                    searchArtistViewModel.Icons = new List<SearchArtistResultIcon>();
-                    foreach (var artist in artistResponseObject.Items)
+                    var icon = artist.Images.Where(x => x.Width == artist.Images.Max(y => y.Width)).FirstOrDefault();
+                    if (icon != null)
                     {
-                        var icon = artist.Images.Where(x => x.Width > 150 && x.Width < 300).FirstOrDefault();
-                        if(icon != null)
+                        searchArtistViewModel.Icons.Add(new SearchArtistResultIcon
                         {
-                            searchArtistViewModel.Icons.Add(new SearchArtistResultIcon
-                            {
-                                ArtistId = artist.Id,
-                                Icon = icon,
-                            });
-                        }
-                        else
+                            ArtistId = artist.Id,
+                            Icon = icon,
+                        });
+                    }
+                    else
+                    {
+                        searchArtistViewModel.Icons.Add(new SearchArtistResultIcon
                         {
-                            searchArtistViewModel.Icons.Add(new SearchArtistResultIcon
+                            ArtistId = artist.Id,
+                            Icon = new SpotifyImage
                             {
-                                ArtistId = artist.Id,
-                                Icon = new SpotifyImage
-                                {
-                                    Height = 0,
-                                    Width = 0,
-                                    Url = "/images/no-image.png"
-                                },
-                            });
-                        }
+                                Height = 0,
+                                Width = 0,
+                                Url = "/images/no-image.png"
+                            },
+                        });
                     }
                 }
-                return PartialView("_ArtistResult", searchArtistViewModel);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return PartialView("_ArtistResult", searchArtistViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
