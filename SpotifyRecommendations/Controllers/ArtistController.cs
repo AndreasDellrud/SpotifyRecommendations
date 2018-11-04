@@ -20,18 +20,18 @@ namespace SpotifyRecommendations.Controllers
         }
 
         // GET: Artist/Details/5
-        public ActionResult Details(string id)
+        public async Task<IActionResult> Details(string id)
         {
-            var artist = _spotifyApiService.GetSpotifyArtist(id).Result;
-            var relatedArtists = _spotifyApiService.GetRelatedArtists(id).Result;
-            var topTracks = _spotifyApiService.GetTopTracksForArtist(id).Result.Take(5);
+            var artist = await _spotifyApiService.GetSpotifyArtist(id);
+            var relatedArtists = await _spotifyApiService.GetRelatedArtists(id);
+            var topTracks = await _spotifyApiService.GetTopTracksForArtist(id);
             var backgroundImg = artist.Images.Where(x => x.Width == artist.Images.Max(y => y.Width)).FirstOrDefault();
             var viewModel = new ArtistDetailsViewModel
             {
                 BackgroundImage = backgroundImg,
                 Artist = artist,
                 RelatedArtists = relatedArtists,
-                TopTracks = topTracks.ToList()
+                TopTracks = topTracks.Take(5).ToList()
             };
             return View(viewModel);
         }

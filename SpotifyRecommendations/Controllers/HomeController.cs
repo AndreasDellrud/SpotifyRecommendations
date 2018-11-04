@@ -5,6 +5,7 @@ using SpotifyRecommendations.Services;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SpotifyRecommendations.Controllers
 {
@@ -17,13 +18,14 @@ namespace SpotifyRecommendations.Controllers
             _spotifyApiService = spotifyApiService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            ViewData["Genres"] = _spotifyApiService.GetAllGenres().Result.Select(x => x.Name).ToList();
+            var genres = await _spotifyApiService.GetAllGenres();
+            ViewData["Genres"] = genres.Select(x => x.Name).ToList();
             return View();
         }
 
-        public IActionResult Search(string genre, int limit, int offset)
+        public async Task<IActionResult> Search(string genre, int limit, int offset)
         {
             var newLimit = limit == 0 ? 5 : limit;
 
@@ -36,7 +38,7 @@ namespace SpotifyRecommendations.Controllers
             };
             if (!string.IsNullOrEmpty(genre))
             {
-                var artistResponseObject = _spotifyApiService.SearchArtistByGenre(genre, newLimit, offset).Result;
+                var artistResponseObject = await _spotifyApiService.SearchArtistByGenre(genre, newLimit, offset);
                 searchArtistViewModel.Artists = artistResponseObject.Items;
                 searchArtistViewModel.Total = artistResponseObject.Total;
                 searchArtistViewModel.Offset = artistResponseObject.Offset;

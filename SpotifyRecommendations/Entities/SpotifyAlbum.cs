@@ -31,5 +31,6 @@ namespace SpotifyRecommendations.Entities
         public string Name { get; set; }
         public string Type { get; set; }
         public string Uri { get; set; }
+        public List<SpotifyTrack> Tracks { get; set; }
     }
 }

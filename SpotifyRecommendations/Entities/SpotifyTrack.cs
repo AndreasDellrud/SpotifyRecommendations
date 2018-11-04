@@ -5,6 +5,7 @@ namespace SpotifyRecommendations.Entities
 {
     public class SpotifyTrack
     {
+        public string AlbumId { get; set; }
         public SpotifyAlbum Album { get; set; }
         public List<SpotifyArtist> Artists { get; set; }
         public string Href { get; set; }

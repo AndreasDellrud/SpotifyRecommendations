@@ -17,7 +17,6 @@ namespace SpotifyRecommendations.Services
         private readonly string clientSecret;
         private readonly string spotifyAuthenticationUrl;
         private readonly string spotifyBaseUrl;
-        private SpotifyAuthenticationObject authenticationObject;
 
         public SpotifyDataAccess(IConfiguration configuration)
         {
@@ -25,137 +24,45 @@ namespace SpotifyRecommendations.Services
             clientSecret = configuration["Spotify:ClientSecret"];
             spotifyAuthenticationUrl = configuration["Spotify:AuthenticationUrl"];
             spotifyBaseUrl = configuration["Spotify:BaseUrl"];
-
-            if (authenticationObject == null)
-            {
-                authenticationObject = GetAuthenticationToken().Result;
-            }
         }
 
         public async Task<string> GetResponseContent(HttpMethod method, string endpoint)
         {
-            try
-            {
-                if (authenticationObject.TimeStamp.AddSeconds(authenticationObject.ExpiresInSeconds) > DateTime.Now)
-                {
-                    authenticationObject = GetAuthenticationToken().Result;
-                }
+            var content = await GetRequestResponseString(HttpMethod.Get, endpoint);
 
-                var client = new HttpClient()
-                {
-                    BaseAddress = new Uri(spotifyBaseUrl)
-                };
-
-                var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
-                request.Headers.Add("ContentType", "application/json");
-                request.Headers.Add("Authorization", $"Bearer {authenticationObject.AccessToken}");
-
-                var response = await client.SendAsync(request);
-                var result = await response.Content.ReadAsStringAsync();
-
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new Exception($"Response: {result}");
-                }
-
-                return result;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        public async Task<string> GetResponseContent(string url)
-        {
-            try
-            {
-                if (authenticationObject.TimeStamp.AddSeconds(authenticationObject.ExpiresInSeconds) > DateTime.Now)
-                {
-                    authenticationObject = GetAuthenticationToken().Result;
-                }
-
-                var uri = new Uri(url);
-
-
-                var client = new HttpClient()
-                {
-                    BaseAddress = new Uri(uri.AbsolutePath)
-                };
-
-                var request = new HttpRequestMessage(HttpMethod.Get, uri.Query);
-                request.Headers.Add("ContentType", "application/json");
-                request.Headers.Add("Authorization", $"Bearer {authenticationObject.AccessToken}");
-
-                var response = await client.SendAsync(request);
-                var result = await response.Content.ReadAsStringAsync();
-
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new Exception($"Response: {result}");
-                }
-
-                return result;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return content;
         }
 
         public async Task<string> GetResponseContent(HttpMethod method, string endpoint, Dictionary<string, string> queryParameters)
         {
-            try
-            {
-                if (authenticationObject.TimeStamp.AddSeconds(authenticationObject.ExpiresInSeconds) > DateTime.Now)
-                {
-                    authenticationObject = GetAuthenticationToken().Result;
-                }
+            string url = QueryHelpers.AddQueryString(endpoint, queryParameters);
 
-                var client = new HttpClient()
-                {
-                    BaseAddress = new Uri(spotifyBaseUrl)
-                };
+            var content = await GetRequestResponseString(HttpMethod.Get, url);
 
-                string url = QueryHelpers.AddQueryString(endpoint, queryParameters);
-
-                var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Add("ContentType", "application/json");
-                request.Headers.Add("Authorization", $"Bearer {authenticationObject.AccessToken}");
-
-                var response = await client.SendAsync(request);
-                var result = await response.Content.ReadAsStringAsync();
-
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new Exception($"Response: {result}");
-                }
-
-                return result;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return content;
         }
 
         public async Task<string> GetResponseContent(HttpMethod method, string endpoint, Dictionary<string, string> queryParameters, bool isSearch)
         {
+            string url = QueryHelpers.AddQueryString(endpoint, queryParameters);
+
+            var content = await GetRequestResponseString(HttpMethod.Get, url);
+
+            return content;
+        }
+
+        private async Task<string> GetRequestResponseString(HttpMethod method, string requestUri)
+        {
             try
             {
-                if (authenticationObject.TimeStamp.AddSeconds(authenticationObject.ExpiresInSeconds) > DateTime.Now)
-                {
-                    authenticationObject = GetAuthenticationToken().Result;
-                }
-
                 var client = new HttpClient()
                 {
                     BaseAddress = new Uri(spotifyBaseUrl)
                 };
 
-                string url = QueryHelpers.AddQueryString(endpoint, queryParameters);
+                var authenticationObject = await GetAuthenticationToken();
 
-                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                var request = new HttpRequestMessage(method, requestUri);
                 request.Headers.Add("ContentType", "application/json");
                 request.Headers.Add("Authorization", $"Bearer {authenticationObject.AccessToken}");
 
@@ -169,7 +76,7 @@ namespace SpotifyRecommendations.Services
 
                 return result;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 throw e;
             }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -11,6 +9,5 @@ namespace SpotifyRecommendations.Services
         Task<string> GetResponseContent(HttpMethod method, string endpoint);
         Task<string> GetResponseContent(HttpMethod method, string endpoint, Dictionary<string, string> queryParameters);
         Task<string> GetResponseContent(HttpMethod method, string endpoint, Dictionary<string, string> queryParameters, bool isSearch);
-        Task<string> GetResponseContent(string url);
     }
 }

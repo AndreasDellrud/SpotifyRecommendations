@@ -20,9 +20,9 @@ namespace SpotifyRecommendations.Controllers
             _spotifyApiSerice = spotifyApiService;
             _recommendationService = recommendationService;
         }
-        public IActionResult Index(string id, TrackFilterViewModel trackFilter)
+        public async Task<IActionResult> Index(string id, TrackFilterViewModel trackFilter)
         {
-            var artist = _spotifyApiSerice.GetSpotifyArtist(id).Result;
+            var artist = await _spotifyApiSerice.GetSpotifyArtist(id);
             var tracks = new List<SpotifyTrack>();
             var recommendations = new List<SpotifyTrack>(); 
             if(trackFilter.IsSearchRequest)
@@ -35,18 +35,16 @@ namespace SpotifyRecommendations.Controllers
                     Instrumentalness = trackFilter.Instrumentalness,
                     Valence = trackFilter.Valence
                 };
-                var albums = _spotifyApiSerice.GetSpotifyAlbumsForArtist(id).Result;
+                var albums = await _spotifyApiSerice.GetSpotifyAlbumsForArtist(id);
 
-                foreach(var album in albums)
+                var albumTracksLists = await Task.WhenAll(albums.Select(x => _spotifyApiSerice.GetTracksByAlbumId(x.Id)));
+
+                albumTracksLists.ToList().ForEach(x => x.ForEach(y =>
                 {
-                    var albumTracks = _spotifyApiSerice.GetTracksByAlbumId(album.Id).Result;
-                    foreach(var track in albumTracks)
-                    {
-                        track.Album = album;
-                        track.AudioFeature = _spotifyApiSerice.GetAudioFeatures(track.Id).Result;
-                        tracks.Add(track);
-                    }
-                }
+                    y.Album = albums.Where(z => z.Id == y.AlbumId).First();
+                    tracks.Add(y);
+                }));
+
                 recommendations = _recommendationService.GetRekommendations(tracks, filter);
             }
             trackFilter.IsSearchRequest = true;

@@ -15,7 +15,7 @@ namespace SpotifyRecommendations.Services
         Task<SpotifyArtist> GetSpotifyArtist(string id);
         Task<List<SpotifyArtist>> GetRelatedArtists(string id);
         Task<List<SpotifyTrack>> GetTopTracksForArtist(string artistId);
-        Task<SpotifyAudioFeature> GetAudioFeatures(string trackId);
+        Task<List<SpotifyAudioFeature>> GetAudioFeatures(List<string> trackIds);
         Task<List<SpotifyAlbum>> GetSpotifyAlbumsForArtist(string artistId);
         Task<List<SpotifyTrack>> GetTracksByAlbumId(string albumId);
     }
