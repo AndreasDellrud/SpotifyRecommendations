@@ -10,7 +10,6 @@ namespace SpotifyRecommendations.Services
     public interface ISpotifyApiService
     {
         Task<List<SpotifyGenre>> GetAllGenres();
-        Task<List<SpotifyCategory>> GetAllCategories();
         Task<ResponseObject<SpotifyArtist>> SearchArtistByGenre(string genre, int limit, int offset);
         Task<SpotifyArtist> GetSpotifyArtist(string id);
         Task<List<SpotifyArtist>> GetRelatedArtists(string id);

@@ -5,6 +5,6 @@ namespace SpotifyRecommendations.Services
 {
     public interface IRecommendationService
     {
-        List<SpotifyTrack> GetRekommendations(List<SpotifyTrack> tracks, TrackFilter filter);
+        List<SpotifyTrack> GetRecommendations(List<SpotifyTrack> tracks, TrackFilter filter);
     }
 }

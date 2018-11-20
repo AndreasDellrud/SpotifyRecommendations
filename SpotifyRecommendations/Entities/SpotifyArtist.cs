@@ -7,7 +7,7 @@ namespace SpotifyRecommendations.Entities
     public class SpotifyArtist
     {
         [JsonConstructor]
-        public SpotifyArtist(List<string> genres)
+        public SpotifyArtist(IReadOnlyCollection<string> genres)
         {
             if(genres != null)
             {

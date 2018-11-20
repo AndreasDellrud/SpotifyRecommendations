@@ -8,6 +8,5 @@ namespace SpotifyRecommendations.Services
     {
         Task<string> GetResponseContent(HttpMethod method, string endpoint);
         Task<string> GetResponseContent(HttpMethod method, string endpoint, Dictionary<string, string> queryParameters);
-        Task<string> GetResponseContent(HttpMethod method, string endpoint, Dictionary<string, string> queryParameters, bool isSearch);
     }
 }

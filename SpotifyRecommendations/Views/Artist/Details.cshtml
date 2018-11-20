@@ -2,8 +2,7 @@
 
 <div>
     <div style="background-image: url(@Model.BackgroundImage.Url)" class="artist-hero">
-        <img src="@Model.Artist.Images.Where(x => x.Width < Model.BackgroundImage.Width).FirstOrDefault().Url" />
-
+        <img src="@Model.Artist.Images.FirstOrDefault(x => x.Width < Model.BackgroundImage.Width)?.Url" alt=""/>
     </div>
 
     <div class="artist-info">
@@ -51,11 +50,13 @@
             <div class="img-block" style="width: 10%">
                 @if (artist.Images == null)
                 {
-                    <a asp-action="Details" asp-route-id="@artist.Id"><img src="~/images/no-image.png" title="@artist.Name" /></a>
+                    <a asp-action="Details" asp-route-id="@artist.Id">
+                        <img src="~/images/no-image.png" title="@artist.Name" alt=""/></a>
                 }
                 else
                 {
-                    <a asp-action="Details" asp-route-id="@artist.Id"><img src="@artist.Images.FirstOrDefault().Url" title="@artist.Name" /></a>
+                    <a asp-action="Details" asp-route-id="@artist.Id">
+                        <img src="@artist.Images.FirstOrDefault()?.Url" title="@artist.Name" alt=""/></a>
                 }
                 <label>@artist.Name</label>
             </div>

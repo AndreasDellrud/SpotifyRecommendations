@@ -9,7 +9,7 @@
         {
             <div class="img-block">
                 <a asp-action="Details" asp-controller="Artist" asp-route-id="@artist.Id">
-                    <img src="@Model.Icons.Where(x => x.ArtistId == artist.Id).FirstOrDefault().Icon.Url" class="img-circle" />
+                    <img src="@Model.Icons.FirstOrDefault(x => x.ArtistId == artist.Id)?.Icon.Url" class="img-circle" alt=""/>
                 </a>
                 <label>@artist.Name</label>
             </div>

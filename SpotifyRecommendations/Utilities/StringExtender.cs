@@ -14,8 +14,8 @@ namespace SpotifyRecommendations.Utilities
 
         public static string Capitalize(this string str)
         {
-            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
-            TextInfo textInfo = cultureInfo.TextInfo;
+            var cultureInfo = Thread.CurrentThread.CurrentCulture;
+            var textInfo = cultureInfo.TextInfo;
 
             return textInfo.ToTitleCase(str);
         }

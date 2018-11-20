@@ -25,7 +25,7 @@
     <div class="form-group">
         <label asp-for="@Model.TrackFilter.Acousticness"></label>
         <input asp-for="@Model.TrackFilter.Acousticness" class="form-control" aria-describedby="acousticnessHelp" type="range" min="0" max="1" step="0.01"/>
-        <small id="acousticnessHelp" class="form-text text-muted">Should the song be accoustic?</small>
+        <small id="acousticnessHelp" class="form-text text-muted">Should the song be acoustic?</small>
     </div>
     <div class="form-group">
         <label asp-for="@Model.TrackFilter.Valence"></label>
@@ -62,7 +62,7 @@
             </tr>
         </thead>
         <tbody>
-            @{int count = 1;}
+            @{var count = 1;}
             @foreach (var track in Model.Tracks)
             {
             <tr>

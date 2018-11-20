@@ -7,15 +7,16 @@ namespace SpotifyRecommendations.Services
 {
     public class RecommendationService : IRecommendationService
     {
-        public List<SpotifyTrack> GetRekommendations(List<SpotifyTrack> tracks, TrackFilter filter)
+        public List<SpotifyTrack> GetRecommendations(List<SpotifyTrack> tracks, TrackFilter filter)
         {
             var perfectTracks = tracks.Where(x => x.AudioFeature.Danceability == filter.Danceability &&
                                                     x.AudioFeature.Energy == filter.Energy &&
                                                     x.AudioFeature.Instrumentalness == filter.Instrumentalness &&
                                                     x.AudioFeature.Acousticness == filter.Acousticness &&
                                                     x.AudioFeature.Valence == filter.Valence);
-            if (perfectTracks.Any())
-                return perfectTracks.ToList();
+            var spotifyTracks = perfectTracks.ToList();
+            if (spotifyTracks.Any())
+                return spotifyTracks.ToList();
 
             var audioFeatures = tracks.Select(x => x.AudioFeature).ToList();
 
@@ -31,7 +32,7 @@ namespace SpotifyRecommendations.Services
             return recommendations;
         }
 
-        private List<AudioProfile> FindBestMatch(List<SpotifyAudioFeature> audioFeatures, TrackFilter filter)
+        private IEnumerable<AudioProfile> FindBestMatch(List<SpotifyAudioFeature> audioFeatures, TrackFilter filter)
         {
             var audioProfiles = new List<AudioProfile>();
 
@@ -47,23 +48,15 @@ namespace SpotifyRecommendations.Services
             return audioProfiles.OrderBy(x => x.Distance).Take(3).ToList();
         }
 
-        private double GetDistance(SpotifyAudioFeature audioFeature, TrackFilter filter)
+        private static double GetDistance(SpotifyAudioFeature audioFeature, TrackFilter filter)
         {
-            double danceabilityDiff;
-            double energyDiff;
-            double instrumentalnessDiff;
-            double acousticnessDiff;
-            double valenceDiff;
+            var danceabilityDiff = audioFeature.Danceability - filter.Danceability;
+            var energyDiff = audioFeature.Energy - filter.Energy;
+            var instrumentalityDiff = audioFeature.Instrumentalness - filter.Instrumentalness;
+            var acousticnessDiff = audioFeature.Acousticness - filter.Acousticness;
+            var valenceDiff = audioFeature.Valence - filter.Valence;
 
-            danceabilityDiff = audioFeature.Danceability - filter.Danceability;
-            energyDiff = audioFeature.Energy - filter.Energy;
-            instrumentalnessDiff = audioFeature.Instrumentalness - filter.Instrumentalness;
-            acousticnessDiff = audioFeature.Acousticness - filter.Acousticness;
-            valenceDiff = audioFeature.Valence - filter.Valence;
-
-
-
-            return Math.Sqrt(Math.Pow(danceabilityDiff, 2) + Math.Pow(energyDiff, 2) + Math.Pow(instrumentalnessDiff, 2) + Math.Pow(acousticnessDiff, 2) + Math.Pow(valenceDiff, 2));
+            return Math.Sqrt(Math.Pow(danceabilityDiff, 2) + Math.Pow(energyDiff, 2) + Math.Pow(instrumentalityDiff, 2) + Math.Pow(acousticnessDiff, 2) + Math.Pow(valenceDiff, 2));
         }
 
         private class AudioProfile

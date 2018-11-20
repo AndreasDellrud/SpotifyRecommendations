@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SpotifyRecommendations.Entities
+﻿namespace SpotifyRecommendations.Entities
 {
     public class TrackFilter
     {

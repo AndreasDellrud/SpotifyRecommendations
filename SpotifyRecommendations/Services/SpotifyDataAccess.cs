@@ -13,17 +13,17 @@ namespace SpotifyRecommendations.Services
 {
     public class SpotifyDataAccess : ISpotifyDataAccess
     {
-        private readonly string clientId;
-        private readonly string clientSecret;
-        private readonly string spotifyAuthenticationUrl;
-        private readonly string spotifyBaseUrl;
+        private readonly string _clientId;
+        private readonly string _clientSecret;
+        private readonly string _spotifyAuthenticationUrl;
+        private readonly string _spotifyBaseUrl;
 
         public SpotifyDataAccess(IConfiguration configuration)
         {
-            clientId = configuration["Spotify:ClientId"];
-            clientSecret = configuration["Spotify:ClientSecret"];
-            spotifyAuthenticationUrl = configuration["Spotify:AuthenticationUrl"];
-            spotifyBaseUrl = configuration["Spotify:BaseUrl"];
+            _clientId = configuration["Spotify:ClientId"];
+            _clientSecret = configuration["Spotify:ClientSecret"];
+            _spotifyAuthenticationUrl = configuration["Spotify:AuthenticationUrl"];
+            _spotifyBaseUrl = configuration["Spotify:BaseUrl"];
         }
 
         public async Task<string> GetResponseContent(HttpMethod method, string endpoint)
@@ -35,16 +35,7 @@ namespace SpotifyRecommendations.Services
 
         public async Task<string> GetResponseContent(HttpMethod method, string endpoint, Dictionary<string, string> queryParameters)
         {
-            string url = QueryHelpers.AddQueryString(endpoint, queryParameters);
-
-            var content = await GetRequestResponseString(HttpMethod.Get, url);
-
-            return content;
-        }
-
-        public async Task<string> GetResponseContent(HttpMethod method, string endpoint, Dictionary<string, string> queryParameters, bool isSearch)
-        {
-            string url = QueryHelpers.AddQueryString(endpoint, queryParameters);
+            var url = QueryHelpers.AddQueryString(endpoint, queryParameters);
 
             var content = await GetRequestResponseString(HttpMethod.Get, url);
 
@@ -53,40 +44,33 @@ namespace SpotifyRecommendations.Services
 
         private async Task<string> GetRequestResponseString(HttpMethod method, string requestUri)
         {
-            try
+            var client = new HttpClient()
             {
-                var client = new HttpClient()
-                {
-                    BaseAddress = new Uri(spotifyBaseUrl)
-                };
+                BaseAddress = new Uri(_spotifyBaseUrl)
+            };
 
-                var authenticationObject = await GetAuthenticationToken();
+            var authenticationObject = await GetAuthenticationToken();
 
-                var request = new HttpRequestMessage(method, requestUri);
-                request.Headers.Add("ContentType", "application/json");
-                request.Headers.Add("Authorization", $"Bearer {authenticationObject.AccessToken}");
+            var request = new HttpRequestMessage(method, requestUri);
+            request.Headers.Add("ContentType", "application/json");
+            request.Headers.Add("Authorization", $"Bearer {authenticationObject.AccessToken}");
 
-                var response = await client.SendAsync(request);
-                var result = await response.Content.ReadAsStringAsync();
+            var response = await client.SendAsync(request);
+            var result = await response.Content.ReadAsStringAsync();
 
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new Exception($"Response: {result}");
-                }
-
-                return result;
-            }
-            catch(Exception e)
+            if (response.StatusCode != HttpStatusCode.OK)
             {
-                throw e;
+                throw new Exception($"Response: {result}");
             }
+
+            return result;
         }
 
         private async Task<SpotifyAuthenticationObject> GetAuthenticationToken()
         {
             var client = new HttpClient
             {
-                BaseAddress = new Uri(spotifyAuthenticationUrl)
+                BaseAddress = new Uri(_spotifyAuthenticationUrl)
             };
 
             var requestContent = new List<KeyValuePair<string, string>>
@@ -94,7 +78,7 @@ namespace SpotifyRecommendations.Services
                 new KeyValuePair<string, string>("grant_type", "client_credentials")
             };
 
-            var base64AuthString = $"{clientId}:{clientSecret}".ConvertToBase64();
+            var base64AuthString = $"{_clientId}:{_clientSecret}".ConvertToBase64();
 
             var request = new HttpRequestMessage(HttpMethod.Post, "token")
             {

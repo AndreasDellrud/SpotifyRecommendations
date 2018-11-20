@@ -36,38 +36,38 @@ namespace SpotifyRecommendations.Controllers
                 Offset = 0,
                 Genre = genre
             };
-            if (!string.IsNullOrEmpty(genre))
+
+            if (string.IsNullOrEmpty(genre)) return PartialView("_ArtistResult", searchArtistViewModel);
+
+            var artistResponseObject = await _spotifyApiService.SearchArtistByGenre(genre, newLimit, offset);
+            searchArtistViewModel.Artists = artistResponseObject.Items;
+            searchArtistViewModel.Total = artistResponseObject.Total;
+            searchArtistViewModel.Offset = artistResponseObject.Offset;
+            searchArtistViewModel.Limit = artistResponseObject.Limit;
+            searchArtistViewModel.Icons = new List<SearchArtistResultIcon>();
+            foreach (var artist in artistResponseObject.Items)
             {
-                var artistResponseObject = await _spotifyApiService.SearchArtistByGenre(genre, newLimit, offset);
-                searchArtistViewModel.Artists = artistResponseObject.Items;
-                searchArtistViewModel.Total = artistResponseObject.Total;
-                searchArtistViewModel.Offset = artistResponseObject.Offset;
-                searchArtistViewModel.Limit = artistResponseObject.Limit;
-                searchArtistViewModel.Icons = new List<SearchArtistResultIcon>();
-                foreach (var artist in artistResponseObject.Items)
+                var icon = artist.Images.FirstOrDefault(x => x.Width == artist.Images.Max(y => y.Width));
+                if (icon != null)
                 {
-                    var icon = artist.Images.Where(x => x.Width == artist.Images.Max(y => y.Width)).FirstOrDefault();
-                    if (icon != null)
+                    searchArtistViewModel.Icons.Add(new SearchArtistResultIcon
                     {
-                        searchArtistViewModel.Icons.Add(new SearchArtistResultIcon
-                        {
-                            ArtistId = artist.Id,
-                            Icon = icon,
-                        });
-                    }
-                    else
+                        ArtistId = artist.Id,
+                        Icon = icon,
+                    });
+                }
+                else
+                {
+                    searchArtistViewModel.Icons.Add(new SearchArtistResultIcon
                     {
-                        searchArtistViewModel.Icons.Add(new SearchArtistResultIcon
+                        ArtistId = artist.Id,
+                        Icon = new SpotifyImage
                         {
-                            ArtistId = artist.Id,
-                            Icon = new SpotifyImage
-                            {
-                                Height = 0,
-                                Width = 0,
-                                Url = "/images/no-image.png"
-                            },
-                        });
-                    }
+                            Height = 0,
+                            Width = 0,
+                            Url = "/images/no-image.png"
+                        },
+                    });
                 }
             }
             return PartialView("_ArtistResult", searchArtistViewModel);

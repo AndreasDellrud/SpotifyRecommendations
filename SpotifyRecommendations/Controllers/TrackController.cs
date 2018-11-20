@@ -12,17 +12,17 @@ namespace SpotifyRecommendations.Controllers
 {
     public class TrackController : Controller
     {
-        private readonly ISpotifyApiService _spotifyApiSerice;
+        private readonly ISpotifyApiService _spotifyApiService;
         private readonly IRecommendationService _recommendationService;
 
         public TrackController(ISpotifyApiService spotifyApiService, IRecommendationService recommendationService)
         {
-            _spotifyApiSerice = spotifyApiService;
+            _spotifyApiService = spotifyApiService;
             _recommendationService = recommendationService;
         }
         public async Task<IActionResult> Index(string id, TrackFilterViewModel trackFilter)
         {
-            var artist = await _spotifyApiSerice.GetSpotifyArtist(id);
+            var artist = await _spotifyApiService.GetSpotifyArtist(id);
             var tracks = new List<SpotifyTrack>();
             var recommendations = new List<SpotifyTrack>(); 
             if(trackFilter.IsSearchRequest)
@@ -35,17 +35,17 @@ namespace SpotifyRecommendations.Controllers
                     Instrumentalness = trackFilter.Instrumentalness,
                     Valence = trackFilter.Valence
                 };
-                var albums = await _spotifyApiSerice.GetSpotifyAlbumsForArtist(id);
+                var albums = await _spotifyApiService.GetSpotifyAlbumsForArtist(id);
 
-                var albumTracksLists = await Task.WhenAll(albums.Select(x => _spotifyApiSerice.GetTracksByAlbumId(x.Id)));
+                var albumTracksLists = await Task.WhenAll(albums.Select(x => _spotifyApiService.GetTracksByAlbumId(x.Id)));
 
                 albumTracksLists.ToList().ForEach(x => x.ForEach(y =>
                 {
-                    y.Album = albums.Where(z => z.Id == y.AlbumId).First();
+                    y.Album = albums.First(z => z.Id == y.AlbumId);
                     tracks.Add(y);
                 }));
 
-                recommendations = _recommendationService.GetRekommendations(tracks, filter);
+                recommendations = _recommendationService.GetRecommendations(tracks, filter);
             }
             trackFilter.IsSearchRequest = true;
             var viewModel = new TrackRecommendationViewModel()

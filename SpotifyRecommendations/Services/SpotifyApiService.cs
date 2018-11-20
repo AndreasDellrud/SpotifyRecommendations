@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using SpotifyRecommendations.Entities;
-using SpotifyRecommendations.Entities.ResponseObjects;
-using SpotifyRecommendations.Utilities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SpotifyRecommendations.Entities;
+using SpotifyRecommendations.Entities.ResponseObjects;
+using SpotifyRecommendations.Utilities;
 
 namespace SpotifyRecommendations.Services
 {
@@ -20,45 +20,19 @@ namespace SpotifyRecommendations.Services
 
         public async Task<List<SpotifyGenre>> GetAllGenres()
         {
-            var endpoint = "recommendations/available-genre-seeds";
+            const string endpoint = "recommendations/available-genre-seeds";
             var getResponse = await _spotifyDataAccess.GetResponseContent(HttpMethod.Get, endpoint);
             var responseObject = JsonConvert.DeserializeObject<GenreResponseObject>(getResponse);
 
-            var spotifyGenres = responseObject.Genres.Select(x => new SpotifyGenre() { Name = x.Capitalize() });
+            var spotifyGenres = responseObject.Genres.Select(x => new SpotifyGenre { Name = x.Capitalize() });
 
             return spotifyGenres.ToList();
         }
 
-        public async Task<List<SpotifyCategory>> GetAllCategories()
-        {
-            var limit = 10;
-            var offset = 0;
-            int total = 0;
-            var endpoint = "browse/categories";
-            var queryParameters = new Dictionary<string, string>();
-            var categories = new List<SpotifyCategory>();
-
-            queryParameters.Add("offset", offset.ToString());
-            queryParameters.Add("limit", limit.ToString());
-
-            do
-            {
-                var getResponse = await _spotifyDataAccess.GetResponseContent(HttpMethod.Get, endpoint, queryParameters);
-                var responseRoot = JsonConvert.DeserializeObject<CategoryRootObject>(getResponse);
-                var responseObject = responseRoot.Categories;
-                total = responseObject.Total;
-                categories.AddRange(responseObject.Items);
-                offset += responseObject.Limit;
-                queryParameters["offset"] = offset.ToString();
-            } while (categories.Count < total);
-
-            return categories;
-        }
-
         public async Task<ResponseObject<SpotifyArtist>> SearchArtistByGenre(string genre, int limit, int offset)
         {
-            var endpoint = "search";
-            var searchType = "artist";
+            const string endpoint = "search";
+            const string searchType = "artist";
             var queryParameters = new Dictionary<string, string>
             {
                 { "q", $"genre:{genre}" },
@@ -110,7 +84,7 @@ namespace SpotifyRecommendations.Services
 
             foreach (var track in responseObject)
             {
-                track.AudioFeature = audioFeatures.Where(x => x.Id == track.Id).First();
+                track.AudioFeature = audioFeatures.First(x => x.Id == track.Id);
             }
 
             return responseObject;
@@ -118,7 +92,7 @@ namespace SpotifyRecommendations.Services
 
         public async Task<List<SpotifyAudioFeature>> GetAudioFeatures(List<string> trackIds)
         {
-            var endpoint = $"audio-features";
+            const string endpoint = "audio-features";
             var queryParameters = new Dictionary<string, string>
             {
                 { "ids", string.Join(',', trackIds) }
@@ -132,9 +106,9 @@ namespace SpotifyRecommendations.Services
 
         public async Task<List<SpotifyAlbum>> GetSpotifyAlbumsForArtist(string artistId)
         {
-            var limit = 50;
+            const int limit = 50;
+            int total;
             var offset = 0;
-            int total = 0;
             var endpoint = $"artists/{artistId}/albums";
             var queryParameters = new Dictionary<string, string>();
             var albums = new List<SpotifyAlbum>();
@@ -159,9 +133,9 @@ namespace SpotifyRecommendations.Services
 
         public async Task<List<SpotifyTrack>> GetTracksByAlbumId(string albumId)
         {
-            var limit = 50;
+            const int limit = 50;
+            int total;
             var offset = 0;
-            int total = 0;
             var endpoint = $"albums/{albumId}/tracks";
             var queryParameters = new Dictionary<string, string>();
             var tracks = new List<SpotifyTrack>();
@@ -184,7 +158,7 @@ namespace SpotifyRecommendations.Services
             tracks.ForEach(x =>
             {
                 x.AlbumId = albumId;
-                x.AudioFeature = audioFeatures.Where(y => y.Id == x.Id).First();
+                x.AudioFeature = audioFeatures.First(y => y.Id == x.Id);
             });
             return tracks;
         }

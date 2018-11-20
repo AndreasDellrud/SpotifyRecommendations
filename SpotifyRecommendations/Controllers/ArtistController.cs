@@ -25,7 +25,7 @@ namespace SpotifyRecommendations.Controllers
             var artist = await _spotifyApiService.GetSpotifyArtist(id);
             var relatedArtists = await _spotifyApiService.GetRelatedArtists(id);
             var topTracks = await _spotifyApiService.GetTopTracksForArtist(id);
-            var backgroundImg = artist.Images.Where(x => x.Width == artist.Images.Max(y => y.Width)).FirstOrDefault();
+            var backgroundImg = artist.Images.FirstOrDefault(x => x.Width == artist.Images.Max(y => y.Width));
             var viewModel = new ArtistDetailsViewModel
             {
                 BackgroundImage = backgroundImg,
