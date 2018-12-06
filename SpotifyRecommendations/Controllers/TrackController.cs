@@ -24,7 +24,7 @@ namespace SpotifyRecommendations.Controllers
         {
             var artist = await _spotifyApiService.GetSpotifyArtist(id);
             var tracks = new List<SpotifyTrack>();
-            var recommendations = new List<SpotifyTrack>(); 
+            var recommendations = new List<SpotifyTrack>();
             if(trackFilter.IsSearchRequest)
             {
                 var filter = new TrackFilter
