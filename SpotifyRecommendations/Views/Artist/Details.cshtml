@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                @{int count = 1;}
+                @{var count = 1;}
                 @foreach (var track in Model.TopTracks)
                 {
                     <tr>
@@ -30,7 +30,7 @@
                         <td>@track.Album.Name</td>
                         @if (!string.IsNullOrEmpty(track.PreviewUrl))
                         {
-                            <td><audio class="track-audio-preview" src="@track.PreviewUrl" controls></audio></td>
+                            <td><audio class="sample-audio-player" src="@track.PreviewUrl" controls></audio></td>
                         }
                         else
                         {
@@ -45,22 +45,24 @@
 
     <div class="related-artists">
         <h3>Related artists</h3>
-        @foreach (var artist in Model.RelatedArtists)
-        {
-            <div class="img-block" style="width: 10%">
-                @if (artist.Images == null)
-                {
-                    <a asp-action="Details" asp-route-id="@artist.Id">
-                        <img src="~/images/no-image.png" title="@artist.Name" alt=""/></a>
-                }
-                else
-                {
-                    <a asp-action="Details" asp-route-id="@artist.Id">
-                        <img src="@artist.Images.FirstOrDefault()?.Url" title="@artist.Name" alt=""/></a>
-                }
-                <label>@artist.Name</label>
-            </div>
-        }
+        <div class="artist-container">
+            @foreach (var artist in Model.RelatedArtists)
+            {
+                <div class="img-block">
+                    @if (artist.Images == null)
+                    {
+                        <a asp-action="Details" asp-route-id="@artist.Id">
+                            <img src="~/images/no-image.png" title="@artist.Name" alt=""/></a>
+                    }
+                    else
+                    {
+                        <a asp-action="Details" asp-route-id="@artist.Id">
+                            <img src="@artist.Images.FirstOrDefault()?.Url" title="@artist.Name" alt=""/></a>
+                    }
+                    <label>@artist.Name</label>
+                </div>
+            }
+        </div>
     </div>
 
 

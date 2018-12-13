@@ -30,7 +30,7 @@ namespace SpotifyRecommendations
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSingleton<ISpotifyDataAccess, SpotifyDataAccess>();
+            services.AddTransient<ISpotifyDataAccess, SpotifyDataAccess>();
             services.AddTransient<ISpotifyApiService, SpotifyApiService>();
             services.AddTransient<IRecommendationService, RecommendationService>();
         }

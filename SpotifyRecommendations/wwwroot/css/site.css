@@ -3,6 +3,7 @@ for details on configuring this project to bundle and minify static web assets. 
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+    display: flex;
 }
 
 /* Wrapping element */
@@ -87,11 +88,12 @@ body {
     width: 100%;
     height: auto;
     margin-bottom: 25px;
+    display: flex;
+    flex-flow: row wrap;
 }
 
     .artist-result .img-block {
         width: 20%;
-        float: left
     }
 
     .artist-result img {
@@ -101,33 +103,31 @@ body {
         text-decoration: none;
     }
 
-    .artist-result label {
-        display: block;
-    }
-
 .related-artists {
-    text-align: center;
     width: 100%;
     height: auto;
     margin-bottom: 25px;
 }
 
-    .related-artists .img-block {
-        width: 10%;
-        float: left;
-        height: 12em;
+    .related-artists .artist-container {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
     }
+        .related-artists .artist-container .img-block {
+            margin: auto;
+            display: flex;
+            width: 15%;
+            flex-flow: column;
+            text-align: center;
+        }
 
-    .related-artists img {
-        border-radius: 50%;
-        width: 100px;
-        height: 100px;
-        text-decoration: none;
-    }
-
-    .related-artists label {
-        display: block;
-    }
+        .related-artists .artist-container .img-block img {
+            border-radius: 50%;
+            width: 8em;
+            height: 8em;
+            text-decoration: none;
+        }
 
 .artist-hero {
     background-position: center;
@@ -154,4 +154,8 @@ body {
 
 .artist-info {
     text-align: center;
+}
+
+.sample-audio-player {
+    height: 2em;
 }
