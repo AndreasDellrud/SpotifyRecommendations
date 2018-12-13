@@ -1,8 +1,10 @@
 ﻿@model SpotifyRecommendations.Models.ArtistDetailsViewModel
-
+@{
+    ViewData["Title"] = Model.Artist.Name;
+}
 <div>
     <div style="background-image: url(@Model.BackgroundImage.Url)" class="artist-hero">
-        <img src="@Model.Artist.Images.FirstOrDefault(x => x.Width < Model.BackgroundImage.Width)?.Url" alt=""/>
+        <img src="@Model.Artist.Images.FirstOrDefault(x => x.Width < Model.BackgroundImage.Width)?.Url" alt="" />
     </div>
 
     <div class="artist-info">
@@ -52,12 +54,14 @@
                     @if (artist.Images == null)
                     {
                         <a asp-action="Details" asp-route-id="@artist.Id">
-                            <img src="~/images/no-image.png" title="@artist.Name" alt=""/></a>
+                            <img src="~/images/no-image.png" title="@artist.Name" alt="" />
+                        </a>
                     }
                     else
                     {
                         <a asp-action="Details" asp-route-id="@artist.Id">
-                            <img src="@artist.Images.FirstOrDefault()?.Url" title="@artist.Name" alt=""/></a>
+                            <img src="@artist.Images.FirstOrDefault()?.Url" title="@artist.Name" alt="" />
+                        </a>
                     }
                     <label>@artist.Name</label>
                 </div>

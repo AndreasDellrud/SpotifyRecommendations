@@ -1,7 +1,7 @@
 ﻿@model SpotifyRecommendations.Models.TrackRecommendationViewModel
 
 @{
-    ViewData["Title"] = "Recommendation";
+    ViewData["Title"] = $"Recommendations for {Model.Artist.Name}";
 }
 
 <h2>Tracks by @Model.Artist.Name</h2>
