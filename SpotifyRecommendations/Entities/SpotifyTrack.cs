@@ -3,17 +3,12 @@ using System.Collections.Generic;
 
 namespace SpotifyRecommendations.Entities
 {
-    public class SpotifyTrack
+    public class SpotifyTrack : SpotifyItemBase
     {
         public string AlbumId { get; set; }
         public SpotifyAlbum Album { get; set; }
         public List<SpotifyArtist> Artists { get; set; }
-        public string Href { get; set; }
-        public string Id { get; set; }
-        public string Name { get; set; }
         public int Popularity { get; set; }
-        public string Type { get; set; }
-        public string Uri { get; set; }
         public SpotifyAudioFeature AudioFeature { get; set; }
 
         [JsonProperty(PropertyName = "available_markets")]

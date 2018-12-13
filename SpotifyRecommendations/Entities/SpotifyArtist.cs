@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SpotifyRecommendations.Entities
 {
-    public class SpotifyArtist
+    public class SpotifyArtist : SpotifyItemBase
     {
         [JsonConstructor]
         public SpotifyArtist(IReadOnlyCollection<string> genres)
@@ -15,11 +15,6 @@ namespace SpotifyRecommendations.Entities
             }
         }
 
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Href { get; set; }
-        public string Type { get; set; }
-        public string Uri { get; set; }
         public int Popularity { get; set; }
         public Followers Followers { get; set; }
         public List<SpotifyGenre> Genres { get; set; }

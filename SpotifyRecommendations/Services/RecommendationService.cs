@@ -7,20 +7,21 @@ namespace SpotifyRecommendations.Services
 {
     public class RecommendationService : IRecommendationService
     {
-        public List<SpotifyTrack> GetRecommendations(List<SpotifyTrack> tracks, TrackFilter filter)
+        public List<SpotifyTrack> GetRecommendations(List<SpotifyTrack> tracks, TrackFilter filter, int recommendationCount)
         {
             var perfectTracks = tracks.Where(x => x.AudioFeature.Danceability == filter.Danceability &&
                                                     x.AudioFeature.Energy == filter.Energy &&
                                                     x.AudioFeature.Instrumentalness == filter.Instrumentalness &&
                                                     x.AudioFeature.Acousticness == filter.Acousticness &&
                                                     x.AudioFeature.Valence == filter.Valence);
+
             var spotifyTracks = perfectTracks.ToList();
             if (spotifyTracks.Any())
                 return spotifyTracks.ToList();
 
             var audioFeatures = tracks.Select(x => x.AudioFeature).ToList();
 
-            var bestMatches = FindBestMatch(audioFeatures, filter);
+            var bestMatches = FindBestMatch(audioFeatures, filter, recommendationCount);
 
             var recommendations = new List<SpotifyTrack>();
 
@@ -32,7 +33,7 @@ namespace SpotifyRecommendations.Services
             return recommendations;
         }
 
-        private IEnumerable<AudioProfile> FindBestMatch(List<SpotifyAudioFeature> audioFeatures, TrackFilter filter)
+        private IEnumerable<AudioProfile> FindBestMatch(List<SpotifyAudioFeature> audioFeatures, TrackFilter filter, int recommendationCount)
         {
             var audioProfiles = new List<AudioProfile>();
 
@@ -45,7 +46,7 @@ namespace SpotifyRecommendations.Services
                 });
             }
 
-            return audioProfiles.OrderBy(x => x.Distance).Take(3).ToList();
+            return audioProfiles.OrderBy(x => x.Distance).Take(recommendationCount).ToList();
         }
 
         private static double GetDistance(SpotifyAudioFeature audioFeature, TrackFilter filter)

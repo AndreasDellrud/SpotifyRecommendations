@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using SpotifyRecommendations.Entities;
 using SpotifyRecommendations.Models;
 using SpotifyRecommendations.Services;
@@ -14,14 +15,19 @@ namespace SpotifyRecommendations.Controllers
     {
         private readonly ISpotifyApiService _spotifyApiService;
         private readonly IRecommendationService _recommendationService;
+        private readonly IConfiguration _configuration;
+        private const int FallbackNumberOfRecommendations = 5;
 
-        public TrackController(ISpotifyApiService spotifyApiService, IRecommendationService recommendationService)
+        public TrackController(ISpotifyApiService spotifyApiService, IRecommendationService recommendationService, IConfiguration configuration)
         {
             _spotifyApiService = spotifyApiService;
             _recommendationService = recommendationService;
+            _configuration = configuration;
         }
         public async Task<IActionResult> Index(string id, TrackFilterViewModel trackFilter)
         {
+            var numberOfRecommendations = int.TryParse(_configuration["Options:NumberOfRecommendations"], out var result) ? result : FallbackNumberOfRecommendations;
+
             var artist = await _spotifyApiService.GetSpotifyArtist(id);
             var tracks = new List<SpotifyTrack>();
             var recommendations = new List<SpotifyTrack>();
@@ -45,7 +51,7 @@ namespace SpotifyRecommendations.Controllers
                     tracks.Add(y);
                 }));
 
-                recommendations = _recommendationService.GetRecommendations(tracks, filter);
+                recommendations = _recommendationService.GetRecommendations(tracks, filter, numberOfRecommendations);
             }
             trackFilter.IsSearchRequest = true;
             var viewModel = new TrackRecommendationViewModel()

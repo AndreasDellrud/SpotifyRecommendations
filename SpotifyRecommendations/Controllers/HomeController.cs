@@ -6,16 +6,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace SpotifyRecommendations.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ISpotifyApiService _spotifyApiService;
+        private readonly IConfiguration _configuration;
+        private const int FallbackDefaultLimit = 5;
 
-        public HomeController(ISpotifyApiService spotifyApiService)
+        public HomeController(ISpotifyApiService spotifyApiService, IConfiguration configuration)
         {
             _spotifyApiService = spotifyApiService;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> Index()
@@ -27,7 +31,8 @@ namespace SpotifyRecommendations.Controllers
 
         public async Task<IActionResult> Search(string genre, int limit, int offset)
         {
-            var newLimit = limit == 0 ? 5 : limit;
+            var defaultLimit = int.TryParse(_configuration["Options:ArtistSearchLimit"], out var result) ? result : FallbackDefaultLimit;
+            var newLimit = limit == 0 ? defaultLimit : limit;
 
             var searchArtistViewModel = new SearchArtistViewModel
             {
