@@ -85,49 +85,28 @@ body {
 
 .artist-result {
     text-align: center;
-    width: 100%;
-    height: auto;
-    margin-bottom: 25px;
-    display: flex;
-    flex-flow: row wrap;
 }
 
-    .artist-result .img-block {
-        width: 20%;
-    }
-
-    .artist-result img {
-        border-radius: 50%;
-        width: 200px;
-        height: 200px;
-        text-decoration: none;
-    }
-
 .related-artists {
-    width: 100%;
-    height: auto;
-    margin-bottom: 25px;
     text-align: center;
 }
 
-    .related-artists .artist-container {
-        display: flex;
-        flex-flow: row wrap;
-        align-items: center;
-    }
-        .related-artists .artist-container .img-block {
-            margin: auto;
-            display: flex;
-            width: 15%;
-            flex-flow: column;
-            text-align: center;
-        }
+.artist-container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
 
-        .related-artists .artist-container .img-block img {
+    .artist-container .img-block {
+        display: flex;
+        flex-flow: column;
+        margin: auto;
+    }
+
+        .artist-container .img-block img {
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            width: 8em;
-            height: 8em;
-            text-decoration: none;
         }
 
 .artist-hero {
@@ -141,10 +120,8 @@ body {
 }
 
     .artist-hero img {
+        border: 0.3em solid #ffffff;
         border-radius: 50%;
-        border-color: #ffffff;
-        border-width: 0.5em;
-        border-style: solid;
         height: 18em;
         width: 18em;
         display: block;

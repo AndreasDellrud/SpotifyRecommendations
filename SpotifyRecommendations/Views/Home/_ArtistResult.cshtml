@@ -5,15 +5,17 @@
     <hr />
     <h2 style="text-align: center;">@Model.Genre</h2>
     <div class="artist-result">
-        @foreach (var artist in Model.Artists)
-        {
-            <div class="img-block">
-                <a asp-action="Details" asp-controller="Artist" asp-route-id="@artist.Id">
-                    <img src="@Model.Icons.FirstOrDefault(x => x.ArtistId == artist.Id)?.Icon.Url" class="img-circle" alt=""/>
-                </a>
-                <label>@artist.Name</label>
-            </div>
-        }
+        <div class="artist-container">
+            @foreach (var artist in Model.Artists)
+            {
+                <div class="img-block">
+                    <a asp-action="Details" asp-controller="Artist" asp-route-id="@artist.Id">
+                        <img src="@Model.Icons.FirstOrDefault(x => x.ArtistId == artist.Id)?.Icon.Url" class="img-circle" alt=""/>
+                    </a>
+                    <label>@artist.Name</label>
+                </div>
+            }
+        </div>
         <form id="artist-paging-form">
             <input asp-for="@Model.Genre" hidden>
             <input asp-for="@Model.Offset" id="offset-input" hidden>
