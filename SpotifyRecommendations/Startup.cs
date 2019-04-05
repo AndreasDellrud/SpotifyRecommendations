@@ -28,7 +28,7 @@ namespace SpotifyRecommendations
             });
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddTransient<ISpotifyDataAccess, SpotifyDataAccess>();
             services.AddTransient<ISpotifyApiService, SpotifyApiService>();
@@ -41,6 +41,7 @@ namespace SpotifyRecommendations
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
             }
             else
             {
